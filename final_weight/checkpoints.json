@@ -1,0 +1,42 @@
+{
+  "latest_ckpt": {
+    "voxelnet": "voxelnet-367488.tckpt",
+    "adam_optimizer": "adam_optimizer-367488.tckpt"
+  },
+  "all_ckpts": {
+    "voxelnet": [
+      "voxelnet-534528.tckpt",
+      "voxelnet-536678.tckpt",
+      "voxelnet-538240.tckpt",
+      "voxelnet-541952.tckpt",
+      "voxelnet-541953.tckpt",
+      "voxelnet-545664.tckpt",
+      "voxelnet-547866.tckpt",
+      "voxelnet-549376.tckpt",
+      "voxelnet-553088.tckpt",
+      "voxelnet-553089.tckpt",
+      "voxelnet-556800.tckpt",
+      "voxelnet-558993.tckpt",
+      "voxelnet-560512.tckpt",
+      "voxelnet-564224.tckpt",
+      "voxelnet-564225.tckpt"
+    ],
+    "adam_optimizer": [
+      "adam_optimizer-534528.tckpt",
+      "adam_optimizer-536678.tckpt",
+      "adam_optimizer-538240.tckpt",
+      "adam_optimizer-541952.tckpt",
+      "adam_optimizer-541953.tckpt",
+      "adam_optimizer-545664.tckpt",
+      "adam_optimizer-547866.tckpt",
+      "adam_optimizer-549376.tckpt",
+      "adam_optimizer-553088.tckpt",
+      "adam_optimizer-553089.tckpt",
+      "adam_optimizer-556800.tckpt",
+      "adam_optimizer-558993.tckpt",
+      "adam_optimizer-560512.tckpt",
+      "adam_optimizer-564224.tckpt",
+      "adam_optimizer-564225.tckpt"
+    ]
+  }
+}
