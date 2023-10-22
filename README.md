@@ -2,6 +2,10 @@
 ## Webpage
 http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/SVDNet.html
 
+## Note
+1. Init this repository from 2021 graduated CHEN CHIH JEN project.
+2. In the OpenPCDet_ros repository(2022 graduated CHANG MING JEN), there is related code. (./pcdet/models/necks)
+
 ## 使用文件
 1. 開環境
 2. cd /data2/chihjen/second.pytorch/second/
