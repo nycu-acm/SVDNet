@@ -30,3 +30,6 @@ http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/SVDNet.html
 2. .\second.pytorch\second\pytorch\builder\second_builder.py
 3. .\second.pytorch\second\pytorch\builder\second_builder.py
 4. .\second.pytorch\second\pytorch\models\voxelnet.py
+
+## Evaluation results on KITTI dataset
+https://github.com/nycu-acm/SVDNet/assets/55246608/306077e9-c61d-4624-949e-47874d814458
