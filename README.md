@@ -6,6 +6,11 @@ http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/SVDNet.html
 1. Init this repository from 2021 graduated CHEN CHIH JEN project.
 2. In the OpenPCDet_ros repository(2022 graduated CHANG MING JEN), there is related code. (./pcdet/models/necks)
 
+## Evaluation results on KITTI dataset
+https://github.com/nycu-acm/SVDNet/assets/55246608/306077e9-c61d-4624-949e-47874d814458
+https://github.com/nycu-acm/SVDNet/assets/55246608/081575a9-58f4-4b5e-ae19-9bd3e92e180b
+https://github.com/nycu-acm/SVDNet/assets/55246608/c8fd7e25-c470-4d4a-a3dc-0ce0b6457747
+
 ## 使用文件
 1. 開環境
 2. cd /data2/chihjen/second.pytorch/second/
@@ -31,5 +36,5 @@ http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/SVDNet.html
 3. .\second.pytorch\second\pytorch\builder\second_builder.py
 4. .\second.pytorch\second\pytorch\models\voxelnet.py
 
-## Evaluation results on KITTI dataset
-https://github.com/nycu-acm/SVDNet/assets/55246608/306077e9-c61d-4624-949e-47874d814458
+
+
