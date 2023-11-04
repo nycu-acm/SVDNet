@@ -17,19 +17,19 @@ from second.builder import target_assigner_builder, voxel_builder
 from second.data.preprocess import merge_second_batch
 from second.protos import pipeline_pb2
 from second.pytorch.builder import (box_coder_builder, input_reader_builder,
-                                      lr_scheduler_builder, optimizer_builder,
-                                      second_builder)
+                                    lr_scheduler_builder, optimizer_builder,
+                                    second_builder)
 from second.utils.eval import get_coco_eval_result, get_official_eval_result
 from second.utils.progress_bar import ProgressBar
 
 
-SVDnet_config={"rank": False,
-                "L2": True,
-                "DARN": False,
-                "DARN_method": 'p',#p=polynomial, f=free
-                "DARN_order": 7,
-                "DARN_cnn": 1,
-                "p_attention": True}
+SVDnet_config = {"rank": False,
+                 "L2": True,
+                 "DARN": False,
+                 "DARN_method": 'p',  # p=polynomial, f=free
+                 "DARN_order": 7,
+                 "DARN_cnn": 1,
+                 "p_attention": True}
 
 
 def _get_pos_neg_loss(cls_loss, labels):
@@ -101,7 +101,7 @@ def train(config_path,
           pickle_result=True):
     """train a VoxelNet model specified by a config file.
     """
-    
+
     GPU = torch.device("cuda:0")
     # os.environ['CUDA_VISIBLE_DEVICES'] = "1"
 
@@ -143,10 +143,11 @@ def train(config_path,
     # BUILD NET
     ######################
     center_limit_range = model_cfg.post_center_limit_range
-    net = second_builder.build(model_cfg, voxel_generator, target_assigner, SVDnet_config)
+    net = second_builder.build(
+        model_cfg, voxel_generator, target_assigner, SVDnet_config)
     net.cuda()
     # net = torch.nn.DataParallel(net)
-    
+
     print("num_trainable parameters:", len(list(net.parameters())))
     # for n, p in net.named_parameters():
     #     print(n, p.shape)
@@ -158,13 +159,12 @@ def train(config_path,
         torchplus.train.try_restore_latest_checkpoints(model_dir, [net.module])
     else:
         torchplus.train.try_restore_latest_checkpoints(model_dir, [net])
-    
+
     if isinstance(net, nn.DataParallel):
         gstep = net.module.get_global_step() - 1
     else:
         gstep = net.get_global_step() - 1
-        
-        
+
     optimizer_cfg = train_cfg.optimizer
     if train_cfg.enable_mixed_precision:
         net.half()
@@ -237,7 +237,7 @@ def train(config_path,
     writer = SummaryWriter(str(summary_dir))
 
     total_step_elapsed = 0
-    
+
     if isinstance(net, nn.DataParallel):
         remain_steps = train_cfg.steps - net.module.get_global_step()
     else:
@@ -248,7 +248,6 @@ def train(config_path,
     total_loop = train_cfg.steps // train_cfg.steps_per_eval + 1
     # total_loop = remain_steps // train_cfg.steps_per_eval + 1
     clear_metrics_every_epoch = train_cfg.clear_metrics_every_epoch
-    
 
     if train_cfg.steps % train_cfg.steps_per_eval == 0:
         total_loop -= 1
@@ -269,7 +268,8 @@ def train(config_path,
                         net.clear_metrics()
                     data_iter = iter(dataloader)
                     example = next(data_iter)
-                example_torch = example_convert_to_torch(example, float_dtype, GPU)
+                example_torch = example_convert_to_torch(
+                    example, float_dtype, GPU)
 
                 batch_size = example["anchors"].shape[0]
 
@@ -284,14 +284,14 @@ def train(config_path,
                 cls_neg_loss = ret_dict["cls_neg_loss"]
                 loc_loss = ret_dict["loc_loss"]
                 cls_loss = ret_dict["cls_loss"]
-                
+
                 loss_rank = ret_dict["loss_rank"]
                 df_rank_loss = ret_dict["df_rank_loss"]
-                
+
                 #############################################################################
                 extra_loss = ret_dict["extra_loss"]
                 #############################################################################
-                
+
                 dir_loss_reduced = ret_dict["dir_loss_reduced"]
                 cared = ret_dict["cared"]
                 labels = example_torch["labels"]
@@ -302,20 +302,20 @@ def train(config_path,
                 torch.nn.utils.clip_grad_norm_(net.parameters(), 10.0)
                 mixed_optimizer.step()
                 mixed_optimizer.zero_grad()
-                
+
                 if isinstance(net, nn.DataParallel):
                     net.module.update_global_step()
                 else:
                     net.update_global_step()
-                    
+
                 if isinstance(net, nn.DataParallel):
                     net_metrics = net.module.update_metrics(cls_loss_reduced,
-                                                 loc_loss_reduced, cls_preds,
-                                                 labels, cared)
+                                                            loc_loss_reduced, cls_preds,
+                                                            labels, cared)
                 else:
                     net_metrics = net.update_metrics(cls_loss_reduced,
-                                                 loc_loss_reduced, cls_preds,
-                                                 labels, cared)
+                                                     loc_loss_reduced, cls_preds,
+                                                     labels, cared)
 
                 step_time = (time.time() - t)
                 t = time.time()
@@ -326,7 +326,7 @@ def train(config_path,
                     num_anchors = example_torch['anchors'].shape[1]
                 else:
                     num_anchors = int(example_torch['anchors_mask'][0].sum())
-                
+
                 if isinstance(net, nn.DataParallel):
                     global_step = net.module.get_global_step()
                 else:
@@ -351,7 +351,7 @@ def train(config_path,
                     except:
                         metrics["loss_rank"] = float(
                             loss_rank)
-                        
+
                     try:
                         metrics["df_rank_loss"] = float(
                             df_rank_loss.detach().cpu().numpy())
@@ -359,7 +359,7 @@ def train(config_path,
                         metrics["df_rank_loss"] = float(
                             df_rank_loss)
 
-###################################################################################                        
+###################################################################################
                     # try:
                     #     metrics["loc_loss_up2"] = float(
                     #         extra_loss["box_preds_up2"].detach().cpu().numpy())
@@ -421,7 +421,7 @@ def train(config_path,
                                                 net.get_global_step())
                     ckpt_start_time = time.time()
             total_step_elapsed += steps
-            
+
             if isinstance(net, nn.DataParallel):
                 torchplus.train.save_models(model_dir, [net.module, optimizer],
                                             net.module.get_global_step())
@@ -431,16 +431,20 @@ def train(config_path,
 
             # Ensure that all evaluation points are saved forever
             if isinstance(net, nn.DataParallel):
-                torchplus.train.save_models(eval_checkpoint_dir, [net.module, optimizer], net.module.get_global_step(), max_to_keep=100)
+                torchplus.train.save_models(eval_checkpoint_dir, [
+                                            net.module, optimizer], net.module.get_global_step(), max_to_keep=100)
             else:
-                torchplus.train.save_models(eval_checkpoint_dir, [net, optimizer], net.get_global_step(), max_to_keep=100)
+                torchplus.train.save_models(
+                    eval_checkpoint_dir, [net, optimizer], net.get_global_step(), max_to_keep=100)
 
             net.eval()
-            
+
             if isinstance(net, nn.DataParallel):
-                result_path_step = result_path / f"step_{net.module.get_global_step()}"
+                result_path_step = result_path / \
+                    f"step_{net.module.get_global_step()}"
             else:
-                result_path_step = result_path / f"step_{net.get_global_step()}"
+                result_path_step = result_path / \
+                    f"step_{net.get_global_step()}"
             result_path_step.mkdir(parents=True, exist_ok=True)
             print("#################################")
             print("#################################", file=logf)
@@ -468,18 +472,20 @@ def train(config_path,
                 prog_bar.print_bar()
 
             sec_per_ex = len(eval_dataset) / (time.time() - t)
-            
+
             if isinstance(net, nn.DataParallel):
-                print(f"avg forward time per example: {net.module.avg_forward_time:.3f}")
+                print(
+                    f"avg forward time per example: {net.module.avg_forward_time:.3f}")
                 print(
                     f"avg postprocess time per example: {net.module.avg_postprocess_time:.3f}"
                 )
             else:
-                print(f"avg forward time per example: {net.avg_forward_time:.3f}")
+                print(
+                    f"avg forward time per example: {net.avg_forward_time:.3f}")
                 print(
                     f"avg postprocess time per example: {net.avg_postprocess_time:.3f}"
                 )
-            
+
             if isinstance(net, nn.DataParallel):
                 net.module.clear_time_metrics()
             else:
@@ -500,9 +506,12 @@ def train(config_path,
             writer.add_text('eval_result', result, global_step)
 
             for i, class_name in enumerate(class_names):
-                writer.add_scalar('bev_ap:{}'.format(class_name), mAPbev[i, 1, 0], global_step)
-                writer.add_scalar('3d_ap:{}'.format(class_name), mAP3d[i, 1, 0], global_step)
-                writer.add_scalar('aos_ap:{}'.format(class_name), mAPaos[i, 1, 0], global_step)
+                writer.add_scalar('bev_ap:{}'.format(
+                    class_name), mAPbev[i, 1, 0], global_step)
+                writer.add_scalar('3d_ap:{}'.format(
+                    class_name), mAP3d[i, 1, 0], global_step)
+                writer.add_scalar('aos_ap:{}'.format(
+                    class_name), mAPaos[i, 1, 0], global_step)
             writer.add_scalar('bev_map', np.mean(mAPbev[:, 1, 0]), global_step)
             writer.add_scalar('3d_map', np.mean(mAP3d[:, 1, 0]), global_step)
             writer.add_scalar('aos_map', np.mean(mAPaos[:, 1, 0]), global_step)
@@ -518,10 +527,10 @@ def train(config_path,
     except Exception as e:
         if isinstance(net, nn.DataParallel):
             torchplus.train.save_models(model_dir, [net.module, optimizer],
-                                    net.module.get_global_step())
+                                        net.module.get_global_step())
         else:
             torchplus.train.save_models(model_dir, [net, optimizer],
-                                    net.get_global_step())
+                                        net.get_global_step())
         logf.close()
         raise e
     # save model before exit
@@ -670,7 +679,7 @@ def evaluate(config_path,
              ref_detfile=None,
              pickle_result=False):
     model_dir = pathlib.Path(model_dir)
-    
+
     GPU = torch.device("cuda:0")
     if predict_test:
         result_name = 'predict_test'
@@ -700,11 +709,12 @@ def evaluate(config_path,
     target_assigner = target_assigner_builder.build(target_assigner_cfg,
                                                     bv_range, box_coder)
 
-    net = second_builder.build(model_cfg, voxel_generator, target_assigner, SVDnet_config)
+    net = second_builder.build(
+        model_cfg, voxel_generator, target_assigner, SVDnet_config)
     net.cuda()
-    
+
     # net = torch.nn.DataParallel(net)
-    
+
     if train_cfg.enable_mixed_precision:
         net.half()
         net.metrics_to_float()
@@ -712,7 +722,8 @@ def evaluate(config_path,
 
     if ckpt_path is None:
         if isinstance(net, nn.DataParallel):
-            torchplus.train.try_restore_latest_checkpoints(model_dir, [net.module])
+            torchplus.train.try_restore_latest_checkpoints(
+                model_dir, [net.module])
         else:
             torchplus.train.try_restore_latest_checkpoints(model_dir, [net])
     else:
@@ -742,24 +753,24 @@ def evaluate(config_path,
         float_dtype = torch.float32
 
     net.eval()
-    
+
     if isinstance(net, nn.DataParallel):
         result_path_step = result_path / f"step_{net.module.get_global_step()}"
     else:
         result_path_step = result_path / f"step_{net.get_global_step()}"
-        
+
     result_path_step.mkdir(parents=True, exist_ok=True)
-    
+
     # pytorch_total_params = sum(p.numel() for p in net.parameters())
     # print("pytorch_total_params", pytorch_total_params)
-    
+
     t = time.time()
     dt_annos = []
     global_set = None
     print("Generate output labels...")
     bar = ProgressBar()
     bar.start(len(eval_dataset) // input_cfg.batch_size + 1)
-    
+
     eval_data_index = 0
 
     for example in iter(eval_dataloader):
@@ -777,7 +788,7 @@ def evaluate(config_path,
                                    center_limit_range, model_cfg.lidar_input)
         bar.print_bar()
         eval_data_index += 1
-        
+
         # break
         # if eval_data_index == 10:
         #     break
@@ -786,12 +797,15 @@ def evaluate(config_path,
     print(f'generate label finished({sec_per_example:.2f}/s). start eval:')
 
     if isinstance(net, nn.DataParallel):
-        print(f"avg forward time per example: {net.module.avg_forward_time:.6f}")
-        print(f"avg postprocess time per example: {net.module.avg_postprocess_time:.6f}")
+        print(
+            f"avg forward time per example: {net.module.avg_forward_time:.6f}")
+        print(
+            f"avg postprocess time per example: {net.module.avg_postprocess_time:.6f}")
     else:
         print(f"avg forward time per example: {net.avg_forward_time:.6f}")
-        print(f"avg postprocess time per example: {net.avg_postprocess_time:.6f}")
-        
+        print(
+            f"avg postprocess time per example: {net.avg_postprocess_time:.6f}")
+
     if not predict_test:
         gt_annos = [info["annos"] for info in eval_dataset.dataset.kitti_infos]
         if not pickle_result:
