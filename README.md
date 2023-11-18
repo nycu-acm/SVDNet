@@ -20,16 +20,6 @@
 
 ## Demo on KITTI dataset
 
-[![Watch the video](https://img.youtube.com/vi/Z011O77Cc9A/0.jpg)](https://www.youtube.com/watch?v=Z011O77Cc9A)
-
-[![Watch the video](https://img.youtube.com/vi/MuL0FIpQGrU/0.jpg)](https://www.youtube.com/watch?v=MuL0FIpQGrU)
-
-[![Watch the video](https://img.youtube.com/vi/1jQQxszeM30/0.jpg)](https://www.youtube.com/watch?v=1jQQxszeM30)
-
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/MuL0FIpQGrU?si=V-P0E8ERRvWChwky" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/1jQQxszeM30?si=2TlvpPw1-ihIHJOT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Abstract
 Nowadays, state-of-the-art (SOTA) LiDAR-based 3D object detection proposed voxelization or pillarization to regularize unordered point clouds and significantly improve computing efficiency. However, accuracy is traded for better efficiency. Thus, we ask a practical question and bring up a new problem setting: “Is it possible to keep high detection accuracy while pillarization is applied to maximize efficiency?”. To this end, we found the inconsistent sparsity of the point cloud over the depth distance, which is still an open question, might be the main reason. To address the inconsistency effect for 3D vehicle detection, a new pillar-based vehicle detection model, named SVDnet, is proposed. First, we proposed a novel low-rank objective that forces the backbone to extract distance/sparsity-aware vehicle features and suppress feature variations. Next, in the neck, we alleviated the remaining feature inconsistency with the help of a Distance AlignmentRatio generation Network (DARN) and a position attention network. Finally, the derived features, less sensitive to sparsity, are inputted to an SSD-like detection head for vehicle detection. Compared with the SOTA pillar-based methods, SVDnet improves the average precision and keeps high computational efficiency (i.e., FPS≥60).
