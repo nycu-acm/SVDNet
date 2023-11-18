@@ -1314,7 +1314,7 @@ class VoxelNet(nn.Module):
                 rank_loss_h = [0.0]
                 for spatial_features_index in range(spatial_features.shape[0]):
                     foreground_grid_num = \
-                        np.load("/data2/chihjen/Kitti_dataset/PointRCNN/data/KITTI/object/training/label_grid_num/" + \
+                        np.load("/mnt/HDD0/data/evan/KITTI_DATASET_ROOT/training/label_grid_num/" + \
                                   "%06d.npy" % example_index[spatial_features_index]).transpose(2,1,0)#[:,::-1,::-1]
                         # np.load("/data2/chihjen/Kitti_dataset/PointRCNN/data/KITTI/object/training/label_grid_num_person/" + \
                         #           "%06d.npy" % example_index[spatial_features_index]).transpose(2,1,0)
@@ -1421,7 +1421,7 @@ class VoxelNet(nn.Module):
                 example_index = example["image_idx"]
                 for spatial_features_index in range(spatial_features.shape[0]):
                     foreground_grid_num = \
-                        np.load("/data2/chihjen/Kitti_dataset/PointRCNN/data/KITTI/object/training/label_grid_num/" + \
+                        np.load("/mnt/HDD0/data/evan/KITTI_DATASET_ROOT/training/label_grid_num/" + \
                                   "%06d.npy" % example_index[spatial_features_index]).transpose(2,1,0)#[:,::-1,::-1]
                     foreground_grid_flag = torch.from_numpy(np.squeeze(foreground_grid_num) > 0).cuda()
                     foreground_matrix = spatial_features[spatial_features_index,:,:,:].permute(1,2,0)[foreground_grid_flag].cuda()    

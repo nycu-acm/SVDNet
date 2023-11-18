@@ -1,11 +1,26 @@
 from mytool import tool, kitti
 import numpy as np
 import cv2
+import os
+
+
+KITTIROOT = "/mnt/HDD0/data/evan/KITTI_DATASET_ROOT"
+trainingORtesting = "training" # testing
+is_Car = True
+
+if (is_Car):
+    os.makedirs(f"{KITTIROOT}/{trainingORtesting}/label_grid_num", exist_ok=True)
+else:
+    os.makedirs(f"{KITTIROOT}/{trainingORtesting}/label_grid_num_person", exist_ok=True)
+    
+
 # 7481個點雲最大值
-# bev_depth_size = 69.12 #1.35~80 for car
-# bev_width_size = 79.36 #45~-45 for car
-bev_depth_size = 47.36 #1.35~80 for person
-bev_width_size = 39.68 #45~-45 for person
+if (is_Car):
+    bev_depth_size = 69.12 #1.35~80 for car
+    bev_width_size = 79.36 #45~-45 for car
+else:
+    bev_depth_size = 47.36 #1.35~80 for person
+    bev_width_size = 39.68 #45~-45 for person
 
 #正方形
 grid_size = 0.16
@@ -28,10 +43,10 @@ bev_width_grid_num = int(np.ceil(bev_width_size/grid_size))
 # idx = 8
 for idx in range(7481):
     print("now process NO.", "%06d.png" % idx)
-    pts_path = "C:/Users/kk/Desktop/AutonomousCar/kittidataset/training/velodyne/" + "%06d.bin" % idx
-    image_path = "C:/Users/kk/Desktop/AutonomousCar/kittidataset/training/image_2/" + "%06d.png" % idx
-    label_path = "C:/Users/kk/Desktop/AutonomousCar/kittidataset/training/label_2/" + "%06d.txt" % idx
-    calib_path = "C:/Users/kk/Desktop/AutonomousCar/kittidataset/training/calib/" + "%06d.txt" % idx
+    pts_path = f"{KITTIROOT}/training/velodyne/" + "%06d.bin" % idx
+    image_path = f"{KITTIROOT}/training/image_2/" + "%06d.png" % idx
+    label_path = f"{KITTIROOT}/training/label_2/" + "%06d.txt" % idx
+    calib_path = f"{KITTIROOT}/training/calib/" + "%06d.txt" % idx
     
     t = tool()
     k = kitti(calib_path)
@@ -101,22 +116,25 @@ for idx in range(7481):
         pts_z = pts[2]
         
         # for car
-        # if ((pts_x > 39.68) or (pts_x < -39.68) or (pts_z > 69.12) or (pts_z < 0)):
-        #     pass
+        if (is_Car):
+            if ((pts_x > 39.68) or (pts_x < -39.68) or (pts_z > 69.12) or (pts_z < 0)):
+                pass
+            else:
+                # for car
+                pts_width_grid_index = int((pts_x + 39.68)// grid_size)
         
         # for person
-        if ((pts_x > 19.84) or (pts_x < -19.84) or (pts_z > 47.36) or (pts_z < 0)):
-            pass
         else:
-            # for car
-            # pts_width_grid_index = int((pts_x + 39.68)// grid_size)
+            if ((pts_x > 19.84) or (pts_x < -19.84) or (pts_z > 47.36) or (pts_z < 0)):
+                pass
+            else:
+                # for person
+                pts_width_grid_index = int((pts_x + 19.84)// grid_size)
             
-            # for person
-            pts_width_grid_index = int((pts_x + 19.84)// grid_size)
-            pts_depth_grid_index = int(pts_z // grid_size)
+        pts_depth_grid_index = int(pts_z // grid_size)
             
-            # 有點的grid
-            pts_grid[bev_depth_grid_num - 1 - pts_depth_grid_index][pts_width_grid_index] = 1
+        # 有點的grid
+        pts_grid[bev_depth_grid_num - 1 - pts_depth_grid_index][pts_width_grid_index] = 1
                 
     
     
@@ -135,24 +153,28 @@ for idx in range(7481):
             pts_z = single_pts[2]
             
             # for car
-            # if ((pts_x > 39.68) or (pts_x < -39.68) or (pts_z > 69.12) or (pts_z < 0)):
-            #     pass
-            
-            # for person
-            if ((pts_x > 19.84) or (pts_x < -19.84) or (pts_z > 47.36) or (pts_z < 0)):
-                pass
-            else:
-                # for car
-                # pts_width_grid_index = int((pts_x + 39.68)// grid_size)
-                
+            if (is_Car):
+                if ((pts_x > 39.68) or (pts_x < -39.68) or (pts_z > 69.12) or (pts_z < 0)):
+                    pass
+                else:  
+                    # for car  
+                    pts_width_grid_index = int((pts_x + 39.68)// grid_size)
+            else:    
                 # for person
-                pts_width_grid_index = int((pts_x + 19.84)// grid_size)
-                pts_depth_grid_index = int(pts_z // grid_size)
+                if ((pts_x > 19.84) or (pts_x < -19.84) or (pts_z > 47.36) or (pts_z < 0)):
+                    pass
+                else:
+                    # for person
+                    pts_width_grid_index = int((pts_x + 19.84)// grid_size)
+            pts_depth_grid_index = int(pts_z // grid_size)
                 
-                pts_label_grid[bev_depth_grid_num - 1 - pts_depth_grid_index][pts_width_grid_index] += 1
-                # bev_label_grid[bev_depth_grid_num - 1 - pts_depth_grid_index][pts_width_grid_index] = 1
-                
-    np.save("C:/Users/kk/Desktop/label_grid_num_person/"  + "%06d.npy" % idx, pts_label_grid[:,:,np.newaxis])
+            pts_label_grid[bev_depth_grid_num - 1 - pts_depth_grid_index][pts_width_grid_index] += 1
+            # bev_label_grid[bev_depth_grid_num - 1 - pts_depth_grid_index][pts_width_grid_index] = 1
+    
+    if (is_Car):
+        np.save(f"{KITTIROOT}/{trainingORtesting}/label_grid_num/"  + "%06d.npy" % idx, pts_label_grid[:,:,np.newaxis])
+    else:
+        np.save(f"{KITTIROOT}/{trainingORtesting}/label_grid_num_person/"  + "%06d.npy" % idx, pts_label_grid[:,:,np.newaxis])
     # cv2.imwrite("C:/Users/kk/Desktop/label_grid/"  + "%06d.png" % idx, pts_label_grid*255 )
 
 

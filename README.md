@@ -9,6 +9,7 @@
   - [Proposed Method](#proposed-method)
   - [Experimental Results](#experimental-results)
   - [Reference](#reference)
+  - [Construct environment](#construct-environment)
   - [Usage](#usage)
   - [Create data setting](#create-data-setting)
   - [Files about SVDnet (directly)](#files-about-svdnet-directly)
@@ -105,14 +106,134 @@ Performance comparison among different plug-in strategies. The source code of Po
 14. T. Yin, X. Zhou, and P. Kr¨ahenb¨uhl, “Center-based 3D object detection and tracking,” in 2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2021, pp. 11 779–11 788.
 
 
-## Usage
-1. At the beggining, use ./pillar.yaml to create environment
-2. cd ./second.pytorch/second/
-3. export PYTHONPATH=$PYTHONPATH:./second.pytorch/
-4. CUDA_VISIBLE_DEVICES=0 python pytorch/train.py train --config_path=./configs/pointpillars/car/xyres_16.proto --model_dir=/path/to/model_dir
-5. CUDA_VISIBLE_DEVICES=0 python pytorch/train.py evaluate --config_path=./configs/pointpillars/car/xyres_16.proto --model_dir=/path/to/model_dir
+## Construct environment
+1. At the beggining, use .pillar.yaml to create environment by conda. Your name of the environment is pillar. 
+   ```bash
+   $ conda env create -f pillar.yaml
+   ```
+2. `conda activate pillar`
+3. Install the lastest version of pytorch **that you can use**.
+   ```bash
+   $ # For example:
+   $ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+   ```
+4. Install some other packages
+    ```bash
+    $ pip install fire
+    $ pip install protobuf==3.12.4
+    $ pip install tensorboardX==2.1
+    $ conda install -c conda-forge llvm
+    $ pip install shapely==1.7.0
+    $ pip install opencv-python==4.3.0.36
+    ```
+5. Install sparsenet 2.0
+   > After executing the following command, you can use the `conda list` command to see that it contains packages for sparseCovnet 2.0.
+   ```bash
+   $ git clone git@github.com:facebookresearch/SparseConvNet.git
+   $ cd SparseConvNet/
+   $ bash develop.sh
+   ```
+6. Install numba **(depend on your OS)**: follow this [link](https://numba.pydata.org/numba-doc/latest/user/installing.html)
+   ```bash
+    # For example
+    $ conda config --add channels c4aarch64
+    $ conda config --add channels conda-forge
+    $ conda install -c numba numba
+   ```
+7. (Setup cuda for numba) Add following environment variables for numba to ~/.bashrc:
+   ```bash
+    export NUMBAPRO_CUDA_DRIVER=/usr/lib/x86_64-linux-gnu/libcuda.so
+    export NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so
+    export NUMBAPRO_LIBDEVICE=/usr/local/cuda/nvvm/libdevice
+    ```
+## Prepare dataset
+1. Download KITTI dataset by download_kilti.sh
+    ```bash
+    $ ./download_kiti.sh
+    ```
+    And the directory will be:
+    ```
+    -  KITTI_DATASET_ROOT
+        - training    
+            - image_2 
+            - calib
+            - label_2
+            - velodyne
+            - velodyne_reduced --> empty folder
+        - testing     
+            -  image_2
+            -  calib
+            -  velodyne
+            -  velodyne_reduced --> empty folder
+    ```
+2. Create kitti_infors
+   ```bash
+   $ python create_data.py create_kitti_info_file --data_path=KITTI_DATASET_ROOT
+   ```
+3. Create reduced point cloud
+   ```bash
+   $ python create_data.py create_reduced_point_cloud --data_path=KITTI_DATASET_ROOT
+   ```
+4. Create ground truth kitti_dbinfors
+    ```bash
+    $ python create_data.py create_groundtruth_database --data_path=KITTI_DATASET_ROOT
+    ```
+5. Modify config file (Ex. xyres_16.proto)
+   ```plain
+   <!-- Line 117: -->
+    ...
+    database_info_path: "path/to/KITTI_DATASET_ROOT/kitti_dbinfos_train.pkl"
+    ...
+   ```
+   ```plain
+   <!-- Line 143~144 -->
+    ...
+    kitti_info_path: "path/to/KITTI_DATASET_ROOT/kitti_infos_train.pkl"
+    kitti_root_path: "path/to/KITTI_DATASET_ROOT"
+    ...
+   ```
+   ```plain
+   <!-- Line 175 -->
+    ...
+    record_file_path: "path/to/KITTI_DATASET_ROOT/kitti_val.tfrecord"
+    ...
+   ```
+   ```plain
+   <!-- Line 185~186 -->
+    kitti_info_path: "path/to/KITTI_DATASET_ROOT/kitti_infos_val.pkl"
+    kitti_root_path: "path/to/KITTI_DATASET_ROOT"
+   ```
+6. Create label_grid_num (for car) OR label_grid_num_person (for person)
+   ```bash
+   $ python ../../kittidata_support/lidar2bevgrid.py
+   ```
+7. modify ./second.pytorch/second/pytorch/models/voxelnet.py. For example, car(label_grid_num)
+   
+   ```python
+   # Line 1317 
+   np.load("path/to/KITTI_DATASET_ROOT/training/label_grid_num/" + \
+                                  "%06d.npy" % example_index[spatial_features_index]).transpose(2,1,0)#[:,::-1,::-1]
+   ```
+   ```python
+   # Line 1424
+   np.load("/path/to/KITTI_DATASET_ROOT/training/label_grid_num/" + \
+                                  "%06d.npy" % example_index[spatial_features_index]).transpose(2,1,0)#[:,::-1,::-1]
+   ```
 
-> Note:
+## Usage
+1. At the beggining, please follow [Construct environment](#construct-environment) to create environment, and follow [Prepare dataset](#prepare-dataset) to create dataset.
+2. `cd ./second.pytorch/second/`
+3. `export PYTHONPATH=$PYTHONPATH:/your/path/to/second.pytorch/`
+4. Training
+    ```bash
+    $ CUDA_VISIBLE_DEVICES=0 python pytorch/train.py train --config_path=./configs/pointpillars/car/xyres_16.proto --model_dir=/path/to/model_dir
+    ```
+5. Testing
+   ```bash
+   $ CUDA_VISIBLE_DEVICES=0 python pytorch/train.py evaluate --config_path=./configs/pointpillars/car/xyres_16.proto --model_dir=/path/to/model_dir
+   ```
+
+> Other notes:
 > 1. For model_dir, put the complete path to the target folder (where the weights are located).
 > 2. If you want to enable "painting," you need to modify the code. Please refer to the create_data_setting.txt file.
 > 3. To modify the model, edit the file at "./second.pytorch/second/pytorch/models/voxelnet.py".
@@ -128,3 +249,4 @@ Performance comparison among different plug-in strategies. The source code of Po
 1. .\second.pytorch\second\pytorch\train.py
 2. .\second.pytorch\second\pytorch\builder\second_builder.py
 3. .\second.pytorch\second\pytorch\models\voxelnet.py
+4. .\kittidata_support\colorize_2d_nparray.py

@@ -1,4 +1,6 @@
-from collections import defaultdict, Iterable
+# from collections import defaultdict, Iterable
+from collections.abc import Iterable
+
 
 import torch
 from copy import deepcopy
