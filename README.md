@@ -19,12 +19,11 @@
 <!-- - In the OpenPCDet_ros repository(2022 graduated CHANG MING JEN), there is related code. (./pcdet/models/necks) -->
 
 ## Demo on KITTI dataset
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Z011O77Cc9A?si=3skTPlJ_deNqfhBd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-https://github.com/nycu-acm/SVDNet/assets/55246608/306077e9-c61d-4624-949e-47874d814458
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MuL0FIpQGrU?si=V-P0E8ERRvWChwky" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-https://github.com/nycu-acm/SVDNet/assets/55246608/081575a9-58f4-4b5e-ae19-9bd3e92e180b
-
-https://github.com/nycu-acm/SVDNet/assets/55246608/c8fd7e25-c470-4d4a-a3dc-0ce0b6457747
+<iframe width="560" height="315" src="https://www.youtube.com/embed/1jQQxszeM30?si=2TlvpPw1-ihIHJOT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Abstract
 Nowadays, state-of-the-art (SOTA) LiDAR-based 3D object detection proposed voxelization or pillarization to regularize unordered point clouds and significantly improve computing efficiency. However, accuracy is traded for better efficiency. Thus, we ask a practical question and bring up a new problem setting: “Is it possible to keep high detection accuracy while pillarization is applied to maximize efficiency?”. To this end, we found the inconsistent sparsity of the point cloud over the depth distance, which is still an open question, might be the main reason. To address the inconsistency effect for 3D vehicle detection, a new pillar-based vehicle detection model, named SVDnet, is proposed. First, we proposed a novel low-rank objective that forces the backbone to extract distance/sparsity-aware vehicle features and suppress feature variations. Next, in the neck, we alleviated the remaining feature inconsistency with the help of a Distance AlignmentRatio generation Network (DARN) and a position attention network. Finally, the derived features, less sensitive to sparsity, are inputted to an SSD-like detection head for vehicle detection. Compared with the SOTA pillar-based methods, SVDnet improves the average precision and keeps high computational efficiency (i.e., FPS≥60).
