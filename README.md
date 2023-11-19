@@ -125,7 +125,7 @@ Performance comparison among different plug-in strategies. The source code of Po
     $ pip install opencv-python==4.3.0.36
     ```
 5. Install sparsenet 2.0
-   > After executing the following command, you can use the `conda list` command to see that it contains packages for sparseCovnet 2.0.
+   > After executing the following command, you can use the `conda list` command to see that it contains packages for sparseCovnet 2.0. If the process occurs "TypeError", ignoring this error message is okay.
    ```bash
    $ git clone git@github.com:facebookresearch/SparseConvNet.git
    $ cd SparseConvNet/
@@ -149,7 +149,7 @@ Performance comparison among different plug-in strategies. The source code of Po
 ## Prepare dataset
 1. Download KITTI dataset by download_kilti.sh
     ```bash
-    $ ./download_kiti.sh
+    $ bash ./download_kiti.sh
     ```
     And the directory will be:
     ```
