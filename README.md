@@ -19,7 +19,9 @@
 <!-- - In the OpenPCDet_ros repository(2022 graduated CHANG MING JEN), there is related code. (./pcdet/models/necks) -->
 
 ## Demo on KITTI dataset
-
+- Demo video1: [Link](http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/video1.mp4)
+- Demo video2: [Link](http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/video2.mp4)
+- Demo video3: [Link](http://acm.cs.nctu.edu.tw/Demo/data/013_SVDNet/video3.mp4)
 
 ## Abstract
 Nowadays, state-of-the-art (SOTA) LiDAR-based 3D object detection proposed voxelization or pillarization to regularize unordered point clouds and significantly improve computing efficiency. However, accuracy is traded for better efficiency. Thus, we ask a practical question and bring up a new problem setting: “Is it possible to keep high detection accuracy while pillarization is applied to maximize efficiency?”. To this end, we found the inconsistent sparsity of the point cloud over the depth distance, which is still an open question, might be the main reason. To address the inconsistency effect for 3D vehicle detection, a new pillar-based vehicle detection model, named SVDnet, is proposed. First, we proposed a novel low-rank objective that forces the backbone to extract distance/sparsity-aware vehicle features and suppress feature variations. Next, in the neck, we alleviated the remaining feature inconsistency with the help of a Distance AlignmentRatio generation Network (DARN) and a position attention network. Finally, the derived features, less sensitive to sparsity, are inputted to an SSD-like detection head for vehicle detection. Compared with the SOTA pillar-based methods, SVDnet improves the average precision and keeps high computational efficiency (i.e., FPS≥60).
